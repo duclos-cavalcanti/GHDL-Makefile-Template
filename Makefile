@@ -10,7 +10,7 @@ CC := ghdl
 CC_FLAGS := --workdir=${BUILD_DIR}
 
 # top level entity to simulate
-SIM := adder_tb
+SIM := pwm_tb
 
 SRC_FILES := $(shell find ${SRC_DIR} -name '*.vhd')
 TEST_FILES := $(shell find ${TEST_DIR} -name '*.vhd')
@@ -39,7 +39,8 @@ help:
 compile: clean
 	@echo "** Compiling VHDL files **"
 	@$(CC) -a -g $(CC_FLAGS) $(VHDL_FILES)
-	@$(CC) -e $(CC_FLAGS) ${SIM} && mv *${SIM}* ${BUILD_DIR}
+	@$(CC) -e $(CC_FLAGS) ${SIM}
+	@mv *${SIM}* ${BUILD_DIR}
 
 .PHONY: debug
 debug:
@@ -49,7 +50,7 @@ debug:
 .PHONY: run
 run: compile
 	@echo "** Running VHDL Simulation **"
-	@$(CC) -r ${SIM} $(RUN_FLAGS)
+	@cd ${BUILD_DIR} && $(CC) -r $(CC_FLAGS) ${SIM} $(RUN_FLAGS)
 
 .PHONY: view
 view:
@@ -60,6 +61,7 @@ view:
 clean:
 	@echo "** Removing Outputted files **"
 	@find -name '*.cf' -exec rm -fv {} \;
+	@find -name '*.gwh' -exec rm -fv {} \;
 	@rm -fv ${BUILD_DIR}/*
 	@touch ${BUILD_DIR}/.gitkeep
 
